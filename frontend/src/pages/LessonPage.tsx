@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Moon, Sun, User, ChevronLeft, ChevronRight, Check, Play, Pause, Volume2, Maximize, CheckCircle2, AlertCircle, Info, Camera, CameraOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -69,8 +69,16 @@ export default function LessonPage() {
     }
   };
 
-  const course = courseData[courseId as keyof typeof courseData] || courseData.basics;
+  const course = courseData[courseId as keyof typeof courseData] || courseData.alphabet;
   const lessons = course.lessons;
+
+  useEffect(() => {
+    console.log('LessonPage Mounted');
+    console.log('courseId:', courseId);
+    console.log('course:', course);
+    console.log('lessons:', lessons);
+    console.log('currentLesson:', currentLesson);
+  }, [courseId, course, lessons, currentLesson]);
 
   const completedLessons = lessons.filter(l => l.completed).length;
   const totalLessons = lessons.length;
@@ -92,33 +100,35 @@ export default function LessonPage() {
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-teal-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors">
-        {/* Top Navigation Bar */}
         <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
           <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
-            {/* Logo */}
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Go back to homepage"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Home</span>
+              </button>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-teal-500 rounded-lg flex items-center justify-center">
                 <span className="text-xl">👋</span>
               </div>
               <span className="font-semibold text-xl text-gray-900 dark:text-white">SignSpeak</span>
             </div>
 
-            {/* Course Title */}
-            <div className="hidden md:block text-center">
-              <h1 className="font-semibold text-gray-900 dark:text-white">{course.title} – Lesson {currentLesson}: {lessons[currentLesson - 1]?.title}</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Learn to sign correctly</p>
+            <div className="text-center flex-1">
+              <h1 className="font-bold text-lg text-gray-900 dark:text-white">{course.title} – Lesson {currentLesson}: {lessons[currentLesson - 1]?.title}</h1>
+              <p className="text-base text-gray-600 dark:text-gray-300">Learn to sign the {lessons[currentLesson - 1]?.title.toLowerCase()} correctly</p>
             </div>
 
-            {/* Right Controls */}
             <div className="flex items-center gap-4">
-              {/* Progress Indicator */}
               <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {completedLessons} / {totalLessons} lessons completed
                 </span>
               </div>
 
-              {/* Dark Mode Toggle */}
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -130,7 +140,6 @@ export default function LessonPage() {
                 )}
               </button>
 
-              {/* Profile Avatar */}
               <Avatar>
                 <AvatarFallback className="bg-blue-500 text-white">
                   <User className="w-5 h-5" />
@@ -140,14 +149,22 @@ export default function LessonPage() {
           </div>
         </header>
 
-        {/* Main Content */}
+        {/* Lesson Title Banner */}
+        <div className="bg-gradient-to-r from-blue-50 to-teal-50 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600">
+          <div className="max-w-screen-2xl mx-auto px-6 py-6">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              {course.title} – Lesson {currentLesson}: {lessons[currentLesson - 1]?.title}
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Learn to sign the {lessons[currentLesson - 1]?.title.toLowerCase()} correctly
+            </p>
+          </div>
+        </div>
+
         <div className="max-w-screen-2xl mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Learning Area */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Dual Video Section */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Instructor Video */}
                 <VideoPlayer
                   title="Instructor Video"
                   isPlaying={isPlaying}
@@ -158,14 +175,12 @@ export default function LessonPage() {
                   className="md:col-span-2"
                 />
 
-                {/* Camera Feed */}
                 <CameraFeed
                   isActive={showCamera}
                   onToggle={() => setShowCamera(!showCamera)}
                 />
               </div>
 
-              {/* AI Feedback Panel */}
               <Card className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-semibold text-lg text-gray-900 dark:text-white">AI Feedback & Suggestions</h2>

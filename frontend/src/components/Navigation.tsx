@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-export function Navigation() {
-  const [isDark, setIsDark] = useState(false);
+export function Navigation({ toggleDarkMode, darkMode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
 
@@ -40,11 +39,11 @@ export function Navigation() {
           {/* Right Actions */}
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setIsDark(!isDark)}
+              onClick={toggleDarkMode}
               className="hidden md:flex p-2 rounded-lg hover:bg-gray-100 transition-colors"
               aria-label="Toggle dark mode"
             >
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
             {user ? (
