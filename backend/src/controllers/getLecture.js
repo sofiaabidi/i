@@ -6,16 +6,32 @@ export async function getLecture(req, res) {
 
   const lecture = await Lecture.findById(lectureId);
 
-  // TODO: check auth & enrollment here
+  if (!lecture) {
+    return res.status(404).json({ message: "Lecture not found" });
+  }
 
-  const videoUrl = cloudinary.url(lecture.videoPublicId, {
-    resource_type: "video",
-    secure: true
-  });
+  let mediaUrl = null;
+
+  if (lecture.contentType === "video" && lecture.videoPublicId) {
+    mediaUrl = cloudinary.url(lecture.videoPublicId, {
+      resource_type: "video",
+      secure: true
+    });
+  }
+
+  if (lecture.contentType === "image" && lecture.imagePublicId) {
+    mediaUrl = cloudinary.url(lecture.imagePublicId, {
+      resource_type: "image",
+      secure: true
+    });
+  }
 
   res.json({
     title: lecture.title,
-    duration: lecture.duration,
-    videoUrl
+    description: lecture.description,
+    contentType: lecture.contentType,
+    mediaUrl
   });
-};
+}
+
+
