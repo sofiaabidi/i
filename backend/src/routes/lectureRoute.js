@@ -8,7 +8,6 @@ const router = express.Router();
 router.get(
   "/:courseId/:lectureId",
   authMiddleware,
-  requireEnrollment,
   getLecture
 );
 

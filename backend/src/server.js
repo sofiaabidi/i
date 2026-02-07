@@ -1,3 +1,22 @@
+// Load environment variables FIRST before any other imports
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+// Get the directory of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load .env file from the backend root directory
+const envPath = join(__dirname, "..", ".env");
+dotenv.config({ path: envPath });
+
+// Log environment variable status (without exposing secrets)
+console.log("Environment variables loaded:");
+console.log("  CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME ? "✓ Set" : "✗ Missing");
+console.log("  CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY ? "✓ Set" : "✗ Missing");
+console.log("  CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET ? "✓ Set" : "✗ Missing");
+
 import express from "express";
 import cors from "cors";
 import session from "express-session";
@@ -10,9 +29,6 @@ import adminRoute from "./routes/adminRoute.js";
 import progressRoute from "./routes/progressRoute.js";
 import { connectDB } from "./config/db.js";
 import { configurePassport } from "./config/passport.js";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const app=express();
 const PORT=process.env.PORT || 5001;

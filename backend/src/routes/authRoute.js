@@ -45,7 +45,8 @@ router.post('/login', async (req, res) => {
     }
 
     if (!user.password) {
-      return res.status(400).json({ message: 'Please login with Google' });
+      const provider = user.provider === 'github' ? 'GitHub' : 'Google';
+      return res.status(400).json({ message: `Please login with ${provider}` });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -64,10 +65,31 @@ router.post('/login', async (req, res) => {
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login?error=google` }),
+  passport.authenticate('google', { session: false, failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google` }),
   (req, res) => {
-    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.redirect(`${process.env.FRONTEND_URL}/oauth?token=${token}`);
+    try {
+      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/oauth?token=${token}`);
+    } catch (error) {
+      console.error('Error generating token:', error);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=token`);
+    }
+  }
+);
+
+// GitHub OAuth routes
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+router.get('/github/callback',
+  passport.authenticate('github', { session: false, failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=github` }),
+  (req, res) => {
+    try {
+      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/oauth?token=${token}`);
+    } catch (error) {
+      console.error('Error generating token:', error);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=token`);
+    }
   }
 );
 

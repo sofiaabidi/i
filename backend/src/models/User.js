@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true,
   },
+  githubId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   provider: {
     type: String,
     default: 'local',
